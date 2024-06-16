@@ -254,15 +254,15 @@ impl Monitor {
                 .iter()
                 .find(|&s| s.skill_id == new_skill.skill_id);
 
-            let new_skill_name = self
-                .bot
-                .lookup_skill_name(new_skill.skill_id)
-                .await
-                .unwrap_or("Unknown".to_string());
-
             match old_skill {
                 Some(old_skill) => {
                     if old_skill.active_skill_level != new_skill.active_skill_level {
+                        let new_skill_name = self
+                            .bot
+                            .lookup_skill_name(new_skill.skill_id)
+                            .await
+                            .unwrap_or("Unknown".to_string());
+
                         message += &format!(
                             "`{} {}` has finished training.\n",
                             new_skill_name,
@@ -270,18 +270,26 @@ impl Monitor {
                         );
                     }
                 }
-                None => match new_skill.active_skill_level {
-                    0 => {
-                        message += &format!("`{}` has been injected.\n", new_skill_name,);
+                None => {
+                    let new_skill_name = self
+                        .bot
+                        .lookup_skill_name(new_skill.skill_id)
+                        .await
+                        .unwrap_or("Unknown".to_string());
+
+                    match new_skill.active_skill_level {
+                        0 => {
+                            message += &format!("`{}` has been injected.\n", new_skill_name,);
+                        }
+                        _ => {
+                            message += &format!(
+                                "`{} {}` has finished training.\n",
+                                new_skill_name,
+                                level_to_roman(new_skill.active_skill_level),
+                            );
+                        }
                     }
-                    _ => {
-                        message += &format!(
-                            "`{} {}` has finished training.\n",
-                            new_skill_name,
-                            level_to_roman(new_skill.active_skill_level),
-                        );
-                    }
-                },
+                }
             }
         }
 
