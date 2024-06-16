@@ -19,6 +19,10 @@ jobs:
       with:
         toolchain: stable
 
+    - name: Install cross-compiler
+      run: |
+        cargo install cross
+
     - name: Set version
       run: |
         # Remove the "v" from the version.
@@ -27,13 +31,19 @@ jobs:
 
         sed -i 's/version = "0.0.0-git"/version = "'${VERSION}'"/' Cargo.toml
 
-    - name: Create binary
+    - name: Create binary (x64)
       run: |
         cargo build --release
-        cp target/release/eve-skills-discord .
+        cp target/release/eve-skills-discord eve-skills-discord-x64
+
+    - name: Create binary (arm64)
+      run: |
+        cross build --release --target aarch64-unknown-linux-gnu
+        cp target/aarch64-unknown-linux-gnu/release/eve-skills-discord eve-skills-discord-arm64
 
     - name: Create release
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          eve-skills-discord
+          eve-skills-discord-x64
+          eve-skills-discord-arm64
