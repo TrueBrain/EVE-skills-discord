@@ -76,7 +76,8 @@ impl Monitor {
                         character.retries = 0;
 
                         let message = self.skill_queue_to_message(skill_queue).await;
-                        let _ = self.bot
+                        let _ = self
+                            .bot
                             .discord_edit_last_message(storage.discord_channel_id, &message)
                             .await;
 
@@ -84,8 +85,12 @@ impl Monitor {
                         if storage.skills.len() != 0 {
                             let message = self.skills_change(&storage.skills, &skills.skills).await;
                             if !message.is_empty() {
-                                let _ = self.bot
-                                    .discord_send_message(storage.discord_activity_thread_id, &message)
+                                let _ = self
+                                    .bot
+                                    .discord_send_message(
+                                        storage.discord_activity_thread_id,
+                                        &message,
+                                    )
                                     .await;
                             }
                         }

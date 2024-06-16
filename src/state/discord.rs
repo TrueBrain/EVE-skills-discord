@@ -53,7 +53,10 @@ impl BotState {
             .category(category_id)
             .topic(format!("Skill training status of {}.", name))
             .permissions(permissions);
-        let channel = guild.create_channel(http, builder).await.map_err(|e| e.to_string())?;
+        let channel = guild
+            .create_channel(http, builder)
+            .await
+            .map_err(|e| e.to_string())?;
 
         let thread = channel
             .create_thread(
@@ -78,27 +81,40 @@ impl BotState {
         Ok((channel.id.get(), thread.id.get()))
     }
 
-    pub async fn discord_send_message(&self, channel_id: u64, message: &String) -> Result<(), String> {
+    pub async fn discord_send_message(
+        &self,
+        channel_id: u64,
+        message: &String,
+    ) -> Result<(), String> {
         let this = self.0.read().await;
         let http = &this.discord.as_ref().unwrap().http;
 
         let channel_id = ChannelId::new(channel_id);
-        channel_id.say(http, message).await.map_err(|e| e.to_string())?;
+        channel_id
+            .say(http, message)
+            .await
+            .map_err(|e| e.to_string())?;
 
         Ok(())
     }
 
-    pub async fn discord_edit_last_message(&self, channel_id: u64, message: &String) -> Result<(), String> {
+    pub async fn discord_edit_last_message(
+        &self,
+        channel_id: u64,
+        message: &String,
+    ) -> Result<(), String> {
         let this = self.0.read().await;
         let http = &this.discord.as_ref().unwrap().http;
 
         let channel_id = ChannelId::new(channel_id);
         let mut messages = channel_id
             .messages(http, GetMessages::new().limit(1))
-            .await.map_err(|e| e.to_string())?;
+            .await
+            .map_err(|e| e.to_string())?;
         messages[0]
             .edit(http, EditMessage::new().content(message))
-            .await.map_err(|e| e.to_string())?;
+            .await
+            .map_err(|e| e.to_string())?;
 
         Ok(())
     }
