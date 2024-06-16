@@ -72,8 +72,32 @@ impl Monitor {
                 let skill_queue = self.bot.get_skill_queue(&access_token, character.id).await;
 
                 match (skills, skill_queue) {
-                    (Ok(skills), Ok(skill_queue)) => {
+                    (Ok(mut skills), Ok(skill_queue)) => {
                         character.retries = 0;
+
+                        /* There can we skills in the queue that are in the past. Apply those to the actual skills already. */
+                        for queue in &skill_queue.0 {
+                            if queue.finish_date.is_none() {
+                                continue;
+                            }
+                            if queue.finish_date.unwrap() > chrono::Utc::now() {
+                                break;
+                            }
+
+                            let skill = skills
+                                .skills
+                                .iter_mut()
+                                .find(|s| s.skill_id == queue.skill_id);
+
+                            match skill {
+                                Some(skill) => {
+                                    skill.active_skill_level = queue.finished_level;
+                                }
+                                None => {
+                                    /* Impossible, as you always have at least the L0 if you are training. */
+                                }
+                            }
+                        }
 
                         let message = self.skill_queue_to_message(skill_queue).await;
                         let _ = self
@@ -195,6 +219,11 @@ impl Monitor {
         let mut message = String::new();
         let mut index = 0;
         for queue in &skill_queue.0 {
+            /* Only list entries that are in the future. */
+            if queue.finish_date <= Some(chrono::Utc::now()) {
+                continue;
+            }
+
             let finish_date = match queue.finish_date {
                 Some(finish_date) => format!("<t:{}:R>", finish_date.timestamp()),
                 None => "never".to_string(),
