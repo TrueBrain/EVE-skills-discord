@@ -1,0 +1,18 @@
+[package]
+name = "eve-discord-skills"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+chrono = "0.4"
+dotenv = "0.15"
+jsonwebtoken = "9.3"
+oauth2 = "4.4"
+reqwest = "0.12"
+serde = "1.0"
+serde_json = "1.0"
+serenity = "0.12"
+tokio = { version = "1.21", features = ["macros", "rt-multi-thread"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
