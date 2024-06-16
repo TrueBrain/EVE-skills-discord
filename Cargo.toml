@@ -9,6 +9,7 @@ chrono = "0.4"
 dotenv = "0.15"
 jsonwebtoken = "9.3"
 oauth2 = "4.4"
+openssl = { version = "0.10", features = ["vendored"] }
 reqwest = "0.12"
 serde = "1.0"
 serde_json = "1.0"
