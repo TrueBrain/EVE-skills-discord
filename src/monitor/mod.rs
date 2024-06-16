@@ -54,7 +54,7 @@ impl Monitor {
         });
     }
 
-    pub async fn update_character(&self, character: &mut Character) {
+    pub async fn update_character(&self, character: &mut Character) -> bool {
         info!("[{}] Refreshing skills", character.id);
 
         let mut storage = self.read_from_storage(character.id).unwrap();
@@ -98,36 +98,51 @@ impl Monitor {
                         storage.skills = skills.skills;
                     }
                     (Err(error), _) => {
-                        warn!("[{}] Failed to fetch skills: {}", character.id, error);
                         character.retries += 1;
+                        warn!(
+                            "[{}] Failed to fetch skills (attempt {} / 8): {}",
+                            character.id, character.retries, error
+                        );
                     }
                     (_, Err(error)) => {
-                        warn!("[{}] Failed to fetch skill queue: {}", character.id, error);
                         character.retries += 1;
+                        warn!(
+                            "[{}] Failed to fetch skill queue (attempt {} / 8): {}",
+                            character.id, character.retries, error
+                        );
                     }
                 }
             }
             Err(error) => {
-                warn!("[{}] Failed to refresh token: {}", character.id, error);
                 character.retries += 1;
-                return;
+                warn!(
+                    "[{}] Failed to refresh token (attempt {} / 8): {}",
+                    character.id, character.retries, error
+                );
             }
         }
 
-        if character.retries >= 3 {
+        let res = if character.retries >= 8 {
             warn!(
-                "[{}] Character has failed to refresh 3 times. Suspending account.",
+                "[{}] Character has failed to load 8 times in a row. Suspending character.",
                 character.id
             );
-            storage.expired = true;
 
             let _ = self.bot.discord_send_message(
                 storage.discord_activity_thread_id,
-                &format!("<@{}>: Failed to retrieve Character information three times in a row. Please re-authenticate with /monitor to continue monitoring. Monitoring suspended.", storage.discord_character_id),
+                &format!("<@{}>: Failed to retrieve Character information eight times in a row. Please re-authenticate with /monitor to continue monitoring. Monitoring suspended.", storage.discord_character_id),
             ).await;
-        }
+
+            /* Mark the character as expired and inform our caller we should be removed. */
+            storage.expired = true;
+            false
+        } else {
+            true
+        };
 
         self.write_to_storage(character.id, storage.clone());
+
+        res
     }
 
     pub async fn run(&self) {
@@ -145,10 +160,25 @@ impl Monitor {
                 } else {
                     let character = &mut list[*index];
 
-                    self.update_character(character).await;
+                    if !self.update_character(character).await {
+                        let character_id = character.id;
+                        list.retain(|c| c.id != character_id);
 
-                    *index = (*index + 1) % list.len();
-                    list.len()
+                        /* Only wrap if we were the last entry; otherwise the current index is the next character. */
+                        if *index >= list.len() {
+                            *index = 0;
+                        }
+
+                        if list.is_empty() {
+                            1
+                        } else {
+                            list.len()
+                        }
+                    } else {
+                        *index = (*index + 1) % list.len();
+
+                        list.len()
+                    }
                 }
             };
 
