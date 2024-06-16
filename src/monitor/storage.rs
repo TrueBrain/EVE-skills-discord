@@ -71,7 +71,6 @@ impl Monitor {
         self.queue_eve_character(eve_character_id).await;
     }
 
-
     pub async fn refresh_eve_character(
         &self,
         eve_character_id: u64,

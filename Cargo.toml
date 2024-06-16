@@ -1,6 +1,6 @@
 [package]
-name = "eve-discord-skills"
-version = "0.1.0"
+name = "eve-skills-discord"
+version = "0.0.0-git"
 edition = "2021"
 
 [dependencies]

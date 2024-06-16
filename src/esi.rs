@@ -23,6 +23,7 @@ pub struct EsiSkill {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct EsiSkills {
     pub skills: Vec<EsiSkill>,
     pub total_sp: i64,
@@ -30,6 +31,7 @@ pub struct EsiSkills {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct EsiSkillQueueItem {
     pub finish_date: Option<chrono::DateTime<Utc>>,
     pub finished_level: i32,

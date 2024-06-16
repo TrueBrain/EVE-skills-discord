@@ -41,7 +41,9 @@ impl BotState {
     ) -> Result<u64, String> {
         let this = self.0.read().await;
         let monitor = this.monitor.as_ref().unwrap();
-        monitor.refresh_eve_character(eve_character_id, refresh_token).await
+        monitor
+            .refresh_eve_character(eve_character_id, refresh_token)
+            .await
     }
 
     pub async fn create_eve_character(

@@ -45,7 +45,10 @@ impl Monitor {
                 return Err("This character is already actively monitored.".to_string());
             }
             /* Check if this was an expired entry. */
-            if let Ok(discord_channel_id) = bot.refresh_eve_character(eve_character_id, &refresh_token).await {
+            if let Ok(discord_channel_id) = bot
+                .refresh_eve_character(eve_character_id, &refresh_token)
+                .await
+            {
                 return Ok(discord_channel_id);
             }
 

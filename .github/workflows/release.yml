@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  release:
+    types:
+    - published
+
+jobs:
+  registries:
+    name: Publish to GitHub
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install Rust toolchain
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Set version
+      run: |
+        # Remove the "v" from the version.
+        VERSION=$(echo ${{ github.ref_name }} | cut -b2-)
+        echo "Version: ${VERSION}"
+
+        sed -i 's/version = "0.0.0-git"/version = "'${VERSION}'"/' Cargo.toml
+
+    - name: Create binary
+      run: |
+        cargo build --release
+        cp target/release/eve-skills-discord .
+
+    - name: Create release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          eve-skills-discord
