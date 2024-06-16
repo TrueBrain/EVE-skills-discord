@@ -91,7 +91,7 @@ impl Monitor {
 
                             match skill {
                                 Some(skill) => {
-                                    skill.active_skill_level = queue.finished_level;
+                                    skill.trained_skill_level = queue.finished_level;
                                 }
                                 None => {
                                     /* Impossible, as you always have at least the L0 if you are training. */
@@ -285,7 +285,7 @@ impl Monitor {
 
             match old_skill {
                 Some(old_skill) => {
-                    if old_skill.active_skill_level != new_skill.active_skill_level {
+                    if old_skill.trained_skill_level != new_skill.trained_skill_level {
                         let new_skill_name = self
                             .bot
                             .lookup_skill_name(new_skill.skill_id)
@@ -295,7 +295,7 @@ impl Monitor {
                         message += &format!(
                             "`{} {}` has finished training.\n",
                             new_skill_name,
-                            level_to_roman(new_skill.active_skill_level),
+                            level_to_roman(new_skill.trained_skill_level),
                         );
                     }
                 }
@@ -306,7 +306,7 @@ impl Monitor {
                         .await
                         .unwrap_or("Unknown".to_string());
 
-                    match new_skill.active_skill_level {
+                    match new_skill.trained_skill_level {
                         0 => {
                             message += &format!("`{}` has been injected.\n", new_skill_name,);
                         }
@@ -314,7 +314,7 @@ impl Monitor {
                             message += &format!(
                                 "`{} {}` has finished training.\n",
                                 new_skill_name,
-                                level_to_roman(new_skill.active_skill_level),
+                                level_to_roman(new_skill.trained_skill_level),
                             );
                         }
                     }
