@@ -23,12 +23,12 @@ pub struct Monitor {
 
 fn level_to_roman(level: i32) -> &'static str {
     match level {
-        0 => "I",
-        1 => "II",
-        2 => "III",
-        3 => "IV",
-        4 => "V",
-        _ => "VI",
+        1 => "I",
+        2 => "II",
+        3 => "III",
+        4 => "IV",
+        5 => "V",
+        _ => "??",
     }
 }
 
