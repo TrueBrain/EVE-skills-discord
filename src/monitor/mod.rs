@@ -219,8 +219,8 @@ impl Monitor {
         let mut message = String::new();
         let mut index = 0;
         for queue in &skill_queue.0 {
-            /* Only list entries that are in the future. */
-            if queue.finish_date <= Some(chrono::Utc::now()) {
+            /* Only list entries that are stalled or are in the future. */
+            if queue.finish_date.is_some() && queue.finish_date <= Some(chrono::Utc::now()) {
                 continue;
             }
 
