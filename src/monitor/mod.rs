@@ -206,12 +206,13 @@ impl Monitor {
                 }
             };
 
+            let sleep_time = tokio::time::Duration::from_secs(30 * 60 / list_len as u64);
+
             /* Space updating characters evenly over a 30 minute period. */
             let elapsed = now.elapsed();
-            tokio::time::sleep(
-                tokio::time::Duration::from_secs(30 * 60 / list_len as u64) - elapsed,
-            )
-            .await;
+            if elapsed < sleep_time {
+                tokio::time::sleep(sleep_time - elapsed).await;
+            }
         }
     }
 
