@@ -225,8 +225,8 @@ impl Monitor {
             }
 
             let finish_date = match queue.finish_date {
-                Some(finish_date) => format!("<t:{}:R>", finish_date.timestamp()),
-                None => "never".to_string(),
+                Some(finish_date) => format!("finish training <t:{}:R>", finish_date.timestamp()),
+                None => "never finish training".to_string(),
             };
             let skill_name = self.bot.lookup_skill_name(queue.skill_id).await;
             let skill_name = match skill_name {
@@ -241,7 +241,7 @@ impl Monitor {
             };
 
             message += &format!(
-                "- `{} {}` will finish training {}.\n",
+                "- `{} {}` will {}.\n",
                 skill_name,
                 level_to_roman(queue.finished_level),
                 finish_date,
@@ -256,13 +256,13 @@ impl Monitor {
         /* Find the last skill in queue. */
         let finish_date = match skill_queue.0.last() {
             Some(queue) => match queue.finish_date {
-                Some(finish_date) => format!("<t:{}:R>", finish_date.timestamp()),
-                None => "never".to_string(),
+                Some(finish_date) => format!("finish <t:{}:R>", finish_date.timestamp()),
+                None => "never finish".to_string(),
             },
-            None => "never".to_string(),
+            None => "never finish".to_string(),
         };
 
-        message += &format!("\nSkill queue will finish {}.\n", finish_date);
+        message += &format!("\nSkill queue will {}.\n", finish_date);
         message += &format!(
             "\nNext update expected <t:{}:R>.\n",
             chrono::Utc::now().timestamp() + 30 * 60
