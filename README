@@ -1,0 +1,16 @@
+# EVE Skills to Discord bridge
+
+This Discord bot reads your Skill Queue every 30 minutes, and reports the current state and changes in a Discord channel + thread.
+
+## Usage
+
+Type `/monitor` in ⁠general, and follow the link.
+After authenticating with the character you want to monitor, a new channel will be created under characters.
+Here your current queue and activity (related to skills) will be published.
+
+You can use the Discord notification system to get active notification for any skill-related activity.
+
+## Limitations
+
+Discord limits a server to 500 channels.
+Be mindful of this limitation.
